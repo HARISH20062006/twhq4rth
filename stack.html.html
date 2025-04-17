@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stake Mines Hack</title>
+    <style>
+        body {
+            background: #011b27;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .page {
+            display: none;
+            background: #021d30;
+            padding: 35px;
+            border-radius: 20px;
+            width: 600px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .active-page {
+            display: block;
+        }
+
+        .main-heading {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #e4e3e9;
+            letter-spacing: 2px;
+        }
+
+        .activation-heading {
+            font-size: 32px;
+            color: #dae6da;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e8e9f0;
+            font-size: 18px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            background: #011324;
+            border: 2px solid #010208;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 20px;
+            background: #6C5DD3;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 20px;
+            margin-top: 20px;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            background: #7D6BE0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 80px);
+            gap: 15px;
+            margin-top: 30px;
+            background: #246583;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .cell {
+            width: 80px;
+            height: 80px;
+            background: #15172c;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .safe {
+            background: #21f032 !important;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(19, 236, 26, 0.5);
+        }
+
+        .prediction-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .back-button {
+            background: #3A3E5B;
+        }
+    </style>
+</head>
+<body>
+    <!-- Input Page -->
+    <div class="page active-page" id="inputPage">
+        <h2 class="main-heading">STAKE HACK MINES</h2>
+        
+        <div class="input-group">
+            <label>Client Seed </label>
+            <input type="text" id="clientSeed" required maxlength="10" pattern="[A-Za-z0-9]{10}">
+        </div>
+        
+        <div class="input-group">
+            <label>Server Seed </label>
+            <input type="text" id="serverSeed" required maxlength="64" pattern="[A-Fa-f0-9]{64}">
+        </div>
+        
+        <div class="input-group">
+            <label>BET AMOUNT</label>
+            <input type="number" id="nonce" value="0" required>
+        </div>
+        
+        <div class="input-group">
+            <label>Number of Mines (1-24)</label>
+            <input type="number" id="mines" min="1" max="24" required>
+        </div>
+
+        <button onclick="startPrediction()">🚀 Start Prediction</button>
+    </div>
+
+    <!-- Prediction Page -->
+    <div class="page" id="predictionPage">
+        <h2 class="activation-heading">STAKE ACTIVATION ON</h2>
+        <div class="grid" id="grid"></div>
+        
+        <div class="prediction-controls">
+            <button onclick="generateNewPrediction()">⏭ Next Prediction</button>
+            <button class="back-button" onclick="showInputPage()">⚙ Change Settings</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        let currentNonce = 0;
+        let totalMines = 0;
+        let clientSeed = '';
+        let serverSeed = '';
+
+        function validateSeeds() {
+            // Client Seed validation
+            const clientSeedInput = document.getElementById('clientSeed');
+            if(!/^[A-Za-z0-9]{10}$/.test(clientSeedInput.value)) {
+                alert('❌ Client Seed must !');
+                clientSeedInput.focus();
+                return false;
+            }
+
+            // Server Seed validation
+            const serverSeedInput = document.getElementById('serverSeed');
+            if(!/^[A-Fa-f0-9]{64}$/.test(serverSeedInput.value)) {
+                alert('❌ Server Seed must !');
+                serverSeedInput.focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        function showInputPage() {
+            document.getElementById('inputPage').classList.add('active-page');
+            document.getElementById('predictionPage').classList.remove('active-page');
+        }
+
+        function startPrediction() {
+            if(!validateSeeds()) return;
+
+            clientSeed = document.getElementById('clientSeed').value;
+            serverSeed = document.getElementById('serverSeed').value;
+            currentNonce = parseInt(document.getElementById('nonce').value);
+            totalMines = parseInt(document.getElementById('mines').value);
+
+            if (isNaN(currentNonce) || isNaN(totalMines) || totalMines < 1 || totalMines > 24) {
+                alert('⚠️ Please enter valid number of mines (1-24)!');
+                return;
+            }
+
+            document.getElementById('inputPage').classList.remove('active-page');
+            document.getElementById('predictionPage').classList.add('active-page');
+            generatePrediction();
+        }
+
+        function generateNewPrediction() {
+            currentNonce++;
+            generatePrediction();
+        }
+
+        function generatePrediction() {
+            document.getElementById('nonce').value = currentNonce;
+            
+            const message = clientSeed + ":" + currentNonce;
+            const hmac = CryptoJS.HmacSHA256(message, serverSeed);
+            const hashBytes = CryptoJS.enc.Hex.parse(hmac.toString());
+
+            let positions = Array.from({length: 25}, (_, i) => i);
+            
+            // Fisher-Yates shuffle
+            for (let i = 24; i > 0; i--) {
+                const byteIndex = 24 - i;
+                const byteValue = hashBytes.words[Math.floor(byteIndex / 4)] >>> (24 - (byteIndex % 4) * 8) & 0xff;
+                const j = byteValue % (i + 1);
+                [positions[i], positions[j]] = [positions[j], positions[i]];
+            }
+
+            const minePositions = positions.slice(0, totalMines);
+            const safePositions = positions.slice(totalMines);
+            const revealCount = Math.min(3, Math.max(2, safePositions.length));
+            const revealedSafes = safePositions.slice(0, revealCount);
+
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < 25; i++) {
+                const cell = document.createElement('div');
+                cell.className = `cell ${revealedSafes.includes(i) ? 'safe' : ''}`;
+                grid.appendChild(cell);
+            }
+        }
+    </script>
+</body>
+</html>
